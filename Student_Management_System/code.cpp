@@ -88,51 +88,65 @@ public:
         }
         else cout<<"Error opening file\n";
     }
-    //Function to display all student data from file;
-    static void displayAll(){  //static functions can be called without creating instance of class
-        //read file using ifstream
+    
+    // Function to display all students in increasing order by roll number
+    static void displayAll() {
+        // Read file using ifstream
         ifstream file("student.txt");
-        if(file.is_open()){
+        vector<Student> students; // Vector to store student records
+
+        if (file.is_open()) {
             string line;
-            // Table header
+
+            // Read data from the file
+            while (getline(file, line)) {
+                if (!line.empty()) {
+                    stringstream ss(line);
+                    Student student;
+                    
+                    // Read data from each line
+                    getline(ss, student.name, ',');
+                    ss >> student.rollno;
+                    ss.ignore(); // Ignore the comma
+                    ss >> student.marks;
+                    ss.ignore(); // Ignore the comma
+                    ss >> student.percentage;
+
+                    // Add the student record to the vector
+                    students.push_back(student);
+                }
+            }
+            file.close();
+
+            // Sort students by roll number
+            sort(students.begin(), students.end(), [](const Student& a, const Student& b) {
+                return a.rollno < b.rollno; // Sort in increasing order of roll number
+            });
+
+            // Print the table header
             cout << left << setw(20) << "Name" 
                 << setw(10) << "Roll No" 
                 << setw(10) << "Marks" 
                 << setw(15) << "Percentage" << endl;
             cout << "----------------------------------------------------------" << endl;
-            
-            bool hasData = false; //bool to check if table is empty
-            while (getline(file,line)) { //examine every line in the file
-                if(!line.empty()){
-                    stringstream ss(line);
-                    string name;
-                    int rollno;
-                    float marks, percentage;
 
-                    //Read data from each line
-                    getline(ss,name,',');
-                    ss>>rollno;
-                    ss.ignore();
-                    ss>>marks;
-                    ss.ignore();
-                    ss>>percentage;
-
-                    //Print data in tabular format
-                    cout<<left<<setw(20)<<name
-                        <<setw(10)<<rollno
-                        <<setw(10)<<marks
-                        <<setw(15)<<percentage<<'%'<<endl;
-
-                    hasData = true; // Set to true if at least one record is found
+            // Check if any records were found
+            if (students.empty()) {
+                cout << "No student records found.\n"; // If file is empty
+            } else {
+                // Print data in tabular format
+                for (const auto& student : students) {
+                    cout << left << setw(20) << student.name
+                        << setw(10) << student.rollno
+                        << setw(10) << student.marks
+                        << setw(15) << student.percentage << '%' << endl;
                 }
             }
-
-            if (!hasData) cout << "No student records found.\n"; //if file is empty
-            file.close();
+        } else {
+            cout << "Error opening file!\n";
         }
-        else cout<<"Error opening file!\n";
-        
     }
+
     //Function to search for a student by roll no
     static void searchByRollNo(int x){ //static functions can be called without creating instance of class
         //read file

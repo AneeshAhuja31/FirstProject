@@ -3,3 +3,5 @@ Sham Mehta,56,65,65
 Rohan Gill,12,65,65
 harshit choudary,7,23,23
 Yash Batra,5,100,100
+Tanay Sharma,45,100,100
+Pranav Jain,1,45,45
