@@ -8,8 +8,12 @@ This Student Management System is a C++ project designed to manage student recor
 
 - Add new student records
 - View all student records
+- Update student records by ID
 - Delete student records by ID
 - Search for student records by name
+- Find Average Marks of Students
+- Find Top Performer
+- Display RankList of Students
 
 ## Requirements
 
