@@ -288,42 +288,229 @@ public:
         }
 
     }
+    //Function to calculate Average Marks
+    static void calculateAvgMarks(){
+        ifstream file("student.txt"); //read mode
+        float totalMarks = 0;
+        int studentCount = 0;
+         if(file.is_open()){
+            string line;
+            while(getline(file,line)){ //iterate through every line
+                stringstream ss(line); //partition line
+                string name;
+                int rollno;
+                float marks,percentage;
+                //read data from each line
+                getline(ss,name,',');
+                ss >> rollno;
+                ss.ignore(); //ignore comma
+                ss>>marks; //extract marks
+
+                totalMarks += marks;
+                studentCount++;
+            }
+            file.close();
+
+            if(studentCount>0){
+                float averageMarks = totalMarks/studentCount;
+                cout<<"Average Marks of all students: "<<fixed<<setprecision(2)<<averageMarks<<endl;
+            }
+            else{
+                cout<<"No student records to calculate average.\n";
+            }
+        }
+        else{
+            cout<<"Error in opening file!\n";
+        }
+    }
+    //Function to find total students
+    static void calculateTotalStudents(){
+        ifstream file("student.txt"); //read mode
+        int studentCount = 0;
+         if(file.is_open()){
+            string line;
+            while(getline(file,line)){ //iterate through every line
+                studentCount++;
+            }
+            file.close();
+
+            if(studentCount>0){
+                
+                cout<<"Total Number of students are: "<<studentCount<<endl;
+            }
+            else{
+                cout<<"No student records found.\n";
+            }
+        }
+        else{
+            cout<<"Error in opening file!\n";
+        }
+    }
+    //Function to find top performer
+    static void findTopPerformer(){
+        ifstream file("student.txt"); //read mode
+        float topMarks = -1.0;
+        vector<Student> topPerformers; //create a vector of object Student to collect top performers
+        int studentCount = 0;
+         if(file.is_open()){
+            string line;
+            while(getline(file,line)){ //iterate through every line
+                stringstream ss(line); //partition line
+                string name;
+                int rollno;
+                float marks,percentage;
+                //read data from each line
+                getline(ss,name,',');
+                ss >> rollno;
+                ss.ignore(); //ignore comma
+                ss>>marks; //extract marks
+                studentCount++;
+                if(marks>topMarks){
+                    topMarks = marks;
+                    topPerformers.clear(); //Reset vector if higher marks are found
+                    topPerformers.push_back(Student(name,rollno,marks));
+                }
+                else if (marks == topMarks) {
+                    topPerformers.push_back(Student(name, rollno, marks));
+                }
+            }
+            file.close();
+            
+            if(studentCount>0){
+                if(topPerformers.size()==1) //for single topper
+                    cout<<"\nThe top performer is: "<<topPerformers[0].name<<" with marks: "<<topMarks<<endl;
+                else{  //for multiple top performers
+                    cout<<"\nThe Top Performers are:\n";
+                    cout << left << setw(20) << "Name"
+                         << setw(10) << "Roll No"
+                         << setw(10) << "Marks"
+                         << setw(15) << "Percentage" << endl;
+                    cout << "----------------------------------------------------------" << endl;
+                    for(const auto& student : topPerformers){ //loop to display details of objects in topPerformer vector
+                        cout<<left<<setw(20)<<student.name
+                            <<setw(10)<<student.rollno
+                            <<setw(10)<<student.marks
+                            <<setw(15)<<student.percentage<<endl;
+                    }
+                }
+            }
+            else cout<<"No student records found.\n";
+            
+        }
+        else{
+            cout<<"Error in opening file!\n";
+        }
+    }
+    //Function to display Ranklist
+    static void displayRankList(){
+        ifstream file("student.txt");
+        vector<Student> students;
+        if(file.is_open()){
+            string line;
+            while(getline(file,line)){
+                stringstream ss(line);
+                string name;
+                int rollno;
+                float marks,percentage;
+
+                //Extract Student Data
+                getline(ss,name,',');
+                ss>>rollno;
+                ss.ignore();
+                ss>>marks;
+                ss.ignore();
+                ss>>percentage;
+
+                students.push_back(Student(name,rollno,marks));
+            }
+            file.close();
+
+            sort(students.begin(),students.end(),[](const Student &a, const Student &b){
+                return a.marks>b.marks;
+            });
+
+            //Display rank list
+            cout<<"\nRank List:\n";
+            cout << left << setw(5) << "Rank"
+                << setw(20) << "Name"
+                << setw(10) << "Roll No"
+                << setw(10) << "Marks"
+                << setw(15) << "Percentage" << endl;
+            cout << "----------------------------------------------------------" << endl;
+
+            int rank=1;
+            for(const auto& student : students){
+                cout<<left<<setw(5)<<rank++
+                    <<setw(20)<<student.name
+                    <<setw(10)<<student.rollno
+                    <<setw(10)<<student.marks
+                    <<setw(15)<<student.percentage<<'%'<<endl;
+            }
+        }
+        else{
+            cout<<"Error opening file!\n";
+        }
+    }
 };
-int main(){
+int main() {
     Student s;
-    int choice,rollno;
-    do{
+    int choice;
+
+    do {
         cout << "\nStudent Management System\n";
-        cout << "1. Add Student\n2. Display All Students\n3. Search Student by Roll No\n4. Update Student Data\n5. Delete Student Data\n6. Exit\n";
+        cout << "1. Add Student\n";
+        cout << "2. Display All Students\n";
+        cout << "3. Search Student by Roll No\n";
+        cout << "4. Update Student Data\n";
+        cout << "5. Delete Student Data\n";
+        cout << "6. Calculate Average Marks\n";
+        cout << "7. Calculate Total Students\n";
+        cout << "8. Find Top Performer\n";
+        cout << "9. Display Rank List\n";
+        cout << "0. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice)
-        {
-        case 1:
-            s.readData();
-            s.saveToFile();
-            break;
-        case 2:
-            Student::displayAll();
-            break;
-        case 3:
-            cout<<"Enter RollNo to search: ";
-            cin>>rollno;
-            Student::searchByRollNo(rollno);
-            break;
-        case 4:
-            Student::updateStudent();
-            break;
-        case 5:
-            Student::deleteStudent();
-            break;
-        case 6:
-            cout<<"Exited the system.\n";
-            break;
-        default:
-            cout<<"Invalid choice! Please choose from 1,2,3,4,5,6";
-        } 
-    } while(choice!=6);
+        switch (choice) {
+            case 1:
+                s.readData();
+                s.saveToFile();
+                break;
+            case 2:
+                Student::displayAll();
+                break;
+            case 3:
+                cout << "Enter Roll No to search: ";
+                int rollno;
+                cin >> rollno;
+                Student::searchByRollNo(rollno);
+                break;
+            case 4:
+                Student::updateStudent();
+                break;
+            case 5:
+                Student::deleteStudent();
+                break;
+            case 6:
+                Student::calculateAvgMarks();
+                break;
+            case 7:
+                Student::calculateTotalStudents();
+                break;
+            case 8:
+                Student::findTopPerformer();
+                break;
+            case 9:
+                Student::displayRankList();
+                break;
+            case 0:
+                cout << "Exiting the system. Goodbye!\n";
+                break;
+            default:
+                cout << "Invalid choice! Please enter a number between 0 and 9.\n";
+                break;
+        }
+    } while (choice != 0);
+
     return 0;
 }
